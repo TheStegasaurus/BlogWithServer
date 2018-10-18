@@ -1,0 +1,133 @@
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  animation: App-logo-spin infinite 20s linear;
+  height: 40vmin;
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+body {
+  font-family: Arial;
+  padding: 20px;
+  background: #f1f1f1;
+}
+
+/* Header/Blog Title */
+.header {
+  padding:10px;
+  font-size: 40px;
+  float: center;
+}
+
+/* Create two unequal columns that floats next to each other */
+/* Left column */
+.leftcolumn { 
+  float: left;
+  width: 78%;
+}
+
+/* Right column */
+.rightcolumn {
+  float: right;
+  width: 20%;
+  padding-left: 20px;
+}
+
+/* Add a card effect for articles */
+.card {
+  background-color: white;
+  padding: 20px;
+  margin-top: 20px;
+}
+
+/* Clear floats after the columns */
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+/* Footer */
+.footer {
+  padding: 20px;
+  text-align: center;
+  background: #ddd;
+  margin-top: 20px;
+}
+
+.headeritem{
+  font-size: 20px;
+  display: inline-block;
+  padding: 0px 50px 0px 50px;
+}
+
+.commentHeader{
+  padding: 10px;
+  font-weight: bold;
+}
+
+.commentSection{
+  border: 1px solid black;
+}
+
+.comment{
+  padding: 10px;
+  display:flex;
+}
+
+.submitComment{
+  padding: 10px;
+  display: inline-flex;
+}
+
+
+button{
+  margin: 10px;
+}
+
+a{
+  text-decoration: none;
+  cursor: pointer;
+  color: black;
+}
+
+.signin{
+  margin: 10px;
+  padding: 5px;
+}
+
+@media screen and (max-width: 1100px) {
+  .leftcolumn{ 
+    width: 100%;
+    padding: 0;
+  }
+  .rightcolumn {
+    display: none;
+    position: absolute;
+  }
+}
