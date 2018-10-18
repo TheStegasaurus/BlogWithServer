@@ -1,5 +1,5 @@
 {
-  "name": "create-react-app-express",
+  "name": "blog_application",
   "version": "0.1.0",
   "license": "MIT",
   "dependencies": {
@@ -8,11 +8,11 @@
     "react-scripts": "2.0.2"
   },
   "scripts": {
-    "start": "node server.js",
+    "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
-    "heroku-postbuild": "cd client && npm install && npm install --only=dev --no-shrinkwrap && npm run build"
+    "dev": "concurrently --kill-others-on-fail \"npm run server\" \"npm run client\""
   },
   "proxy": "http://localhost:5000/",
   "browserslist": [

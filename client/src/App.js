@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
 import './App.css';
+
+//https://medium.freecodecamp.org/how-to-make-create-react-app-work-with-a-node-backend-api-7c5c48acb1b0
+//http://blog-application3.herokuapp.com/
+
 
 let linestyle = {
   background: 'black',
@@ -58,7 +61,7 @@ class App extends Component {
               posts.map((post)=>{
                 return <BlogSummary data={post} setPostID={this.setPostID}/>
               },this)
-            }  
+            }
             
             {
               currPost &&
@@ -77,7 +80,7 @@ class Header extends Component{
   render () {
     return(
     <div>
-      <div className="header">BLOG APPLICATION</div>
+      <div className="header">BLOG APP</div>
 
       <button>Sign In</button>
       <button>Sign Up</button>
@@ -85,8 +88,8 @@ class Header extends Component{
       <hr style={linestyle}/>
 
       <div className='headeritem'><a onClick={()=>this.props.goHome()}>HOME</a></div>
-      <div className='headeritem'><a href="#">AUTHORS</a></div>
-      <div className='headeritem'><a href="#">CONTACT</a></div>
+      <div className='headeritem'>AUTHORS</div>
+      <div className='headeritem'>CONTACT</div>
 
       <hr style={linestyle}/>
 
