@@ -226,21 +226,17 @@ class NewPost extends Component{
   constructor(props) {
     super(props);
     this.state = {title: '', content:''};
-
-    this.handleContentChange = this.handleContentChange.bind(this);
-    this.handleTitleChange = this.handleTitleChange.bind(this);
+    this.handleChange = this.handleChange.bind(this);
   }
 
-  handleTitleChange(event) {
-    this.setState({title: event.target.value});
-  }
-
-  handleContentChange(event) {
-    this.setState({content: event.target.value});
+  handleChange(event) {
+    console.log(event.target.name)
+    console.log(event.target.value)
+    this.setState({[event.target.name]: event.target.value});
   }
 
   handleSubmit(event) {
-
+    console.log("submitted")
     fetch('/api/submitPost', {
       method: 'POST',
       headers: {
@@ -259,6 +255,7 @@ class NewPost extends Component{
 
   render () {
     return(
+      
       <div className="leftcolumn">
         <div className="card">
           <div className="newPostHeader">SUBMIT A POST</div>
@@ -268,11 +265,11 @@ class NewPost extends Component{
               <br/>
               Title:
               <br/>
-              <input type="text" value={this.state.title} onChange={this.handleTitleChange} />
+              <input type="text" name="title" value={this.state.title} onChange={this.handleChange} />
               <br/><br/>
               Content:
               <br/> 
-              <textarea name="textArea" rows="4" cols="50" value={this.state.content} onChange={this.handleContentChange} ></textarea>
+              <textarea name="content" rows="4" cols="50" value={this.state.content} onChange={this.handleChange}></textarea>
             </div>
             <input type="submit" value="Submit" />
           </form>

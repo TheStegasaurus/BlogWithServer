@@ -85,8 +85,19 @@ app.post('/api/submitComment', (req, res) => {
 
 });
 
-app.get('/api/submitPost', (req, res) => {
-  res.send({ express: serverData });
+app.post('/api/submitPost', (req, res) => {
+  console.log("Post request recieved")
+  let body = '';
+  req.on('data', chunk => {
+      body += chunk.toString(); // convert Buffer to string
+  });
+  req.on('end', () => {
+    console.log(body);
+    let json = JSON.parse(body);
+    
+    res.end('ok');
+  });
+
 });
 
 app.get('/api/auth', (req, res) => {
