@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import './App.css';
 
+
 //https://medium.freecodecamp.org/how-to-make-create-react-app-work-with-a-node-backend-api-7c5c48acb1b0
 //http://blog-application3.herokuapp.com/
-
 
 let linestyle = {
   background: 'black',
@@ -16,7 +16,6 @@ class App extends Component {
     this.state = {serverData: {}, postid:null}
     this.setPostID = this.setPostID.bind(this);
     this.goHome = this.goHome.bind(this); 
-    this.sendComment = this.sendComment.bind(this);
   }
 
   componentDidMount() {
@@ -40,22 +39,6 @@ class App extends Component {
     this.setState({
         postid: null
     });
-  }
-
-  sendComment(pid, c_id, text){
-    console.log("function call")
-    fetch('/api/submitComment', {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        pid: pid,
-        c_id: c_id,
-        content: text,
-      })
-    })
   }
 
   callApi = async () => {
@@ -88,9 +71,16 @@ class App extends Component {
             }
             
             {
+              !currPost&&
+              <NewPost />
+            }
+
+            {
               currPost &&
               <BlogPost data={posts.find(e => e._id === currPost)} sendComment={this.sendComment}/>
             }
+
+
           </div>
         }
       </div>
@@ -168,6 +158,39 @@ class BlogSummary extends Component{
 }
 
 class BlogPost extends Component{
+
+  constructor(props) {
+    super(props);
+    this.state = {value: ''};
+
+    this.handleChange = this.handleChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+  }
+
+  handleChange(event) {
+    this.setState({value: event.target.value});
+  }
+
+  handleSubmit(event) {
+    let post = this.props.data;
+
+    fetch('/api/submitComment', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        pid: post._id,
+        c_id: post.comments.length+1,
+        user: "John doe",
+        content: this.state.value,
+      })
+    })
+
+    event.preventDefault();
+  }
+
   render () {
     let post = this.props.data;
     console.log()
@@ -184,14 +207,78 @@ class BlogPost extends Component{
           })}
           </div>
           <div className="commentHeader">Submit a Comment:</div>
-          <form className="submitComment" onSubmit={()=>this.props.sendComment(post._id, (post.comments.length+1), "test comment")}>
-            <input type="text"></input>
-            <input type="submit" value="Submit"/>
+          {
+            <form onSubmit={this.handleSubmit}>
+              <label>
+                <input type="text" value={this.state.value} onChange={this.handleChange} />
+              </label>
+              <input type="submit" value="Submit" />
+            </form>
+          }
+        </div>
+      </div>
+    )
+  }
+}
+
+
+class NewPost extends Component{
+  constructor(props) {
+    super(props);
+    this.state = {title: '', content:''};
+
+    this.handleContentChange = this.handleContentChange.bind(this);
+    this.handleTitleChange = this.handleTitleChange.bind(this);
+  }
+
+  handleTitleChange(event) {
+    this.setState({title: event.target.value});
+  }
+
+  handleContentChange(event) {
+    this.setState({content: event.target.value});
+  }
+
+  handleSubmit(event) {
+
+    fetch('/api/submitPost', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        title: this.state.title,
+        author: "NEW AUTHOR",
+        content: this.state.content
+      })
+    })
+
+    event.preventDefault();
+  }
+
+  render () {
+    return(
+      <div className="leftcolumn">
+        <div className="card">
+          <div className="newPostHeader">SUBMIT A POST</div>
+          <hr style={linestyle}/>
+          <form onSubmit={this.handleSubmit}>
+            <div className="newPost">
+              <br/>
+              Title:
+              <br/>
+              <input type="text" value={this.state.title} onChange={this.handleTitleChange} />
+              <br/><br/>
+              Content:
+              <br/> 
+              <textarea name="textArea" rows="4" cols="50" value={this.state.content} onChange={this.handleContentChange} ></textarea>
+            </div>
+            <input type="submit" value="Submit" />
           </form>
         </div>
       </div>
     )
   }
-
 
 }
