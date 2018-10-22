@@ -16,11 +16,17 @@ class App extends Component {
     this.state = {serverData: {}, postid:null}
     this.setPostID = this.setPostID.bind(this);
     this.goHome = this.goHome.bind(this); 
+    this.sendComment = this.sendComment.bind(this);
   }
 
   componentDidMount() {
     this.callApi()
-      .then(res => this.setState({ serverData: res.express }))
+      .then(res => {
+        console.log(res);
+        return this.setState({ 
+          serverData: res.express
+        })
+      })
       .catch(err => console.log(err));
   }
 
@@ -36,8 +42,26 @@ class App extends Component {
     });
   }
 
+  sendComment(pid, c_id, text){
+    console.log("function call")
+    fetch('/api/submitComment', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        pid: pid,
+        c_id: c_id,
+        content: text,
+      })
+    })
+  }
+
   callApi = async () => {
+    // Set state to loading
     const response = await fetch('/api/getData');
+    // set state to no more loading :-)
     const body = await response.json();
 
     if (response.status !== 200) throw Error(body.message);
@@ -51,7 +75,7 @@ class App extends Component {
     return (
       <div className="App" >
         { 
-          posts &&
+          posts && posts.length > 0 &&
           <div>
             <Header goHome={this.goHome}/>
             <SidePanel data={posts} setPostID={this.setPostID}/>
@@ -65,7 +89,7 @@ class App extends Component {
             
             {
               currPost &&
-              <BlogPost data={posts.find(e => e.id === currPost)}/>
+              <BlogPost data={posts.find(e => e._id === currPost)} sendComment={this.sendComment}/>
             }
           </div>
         }
@@ -86,7 +110,7 @@ class Header extends Component{
       <button>Sign Up</button>
       
       <hr style={linestyle}/>
-
+      {/*eslint-disable-next-line*/}
       <div className='headeritem'><a onClick={()=>this.props.goHome()}>HOME</a></div>
       <div className='headeritem'>AUTHORS</div>
       <div className='headeritem'>CONTACT</div>
@@ -111,7 +135,8 @@ class SidePanel extends Component{
           <div className="card">
             <h3>Popular Posts</h3>
             <div className="popularPosts">{posts.map((item)=>{
-                return <div><a onClick={()=>this.props.setPostID(item.id)}>{item.title}</a></div>
+                //eslint-disable-next-line
+                return <div><a onClick={()=>this.props.setPostID(item._id)}>{item.title}</a></div>
              })}
             </div>
           </div>
@@ -128,10 +153,12 @@ class SidePanel extends Component{
 class BlogSummary extends Component{
   render () {
     let post = this.props.data;
+    console.log(post)
     return(
       <div className="leftcolumn">
         <div className="card">
-          <h2><a onClick={()=>this.props.setPostID(post.id)}>{post.title}</a></h2>
+          {/*eslint-disable-next-line*/}
+          <h2><a onClick={()=>this.props.setPostID(post._id)}>{post.title}</a></h2>
           <h5>{post.date}</h5>
           <p>{post.content.substring(0, 625)}...</p>
         </div>
@@ -143,6 +170,7 @@ class BlogSummary extends Component{
 class BlogPost extends Component{
   render () {
     let post = this.props.data;
+    console.log()
     return(
       <div className="leftcolumn">
         <div className="card">
@@ -156,13 +184,14 @@ class BlogPost extends Component{
           })}
           </div>
           <div className="commentHeader">Submit a Comment:</div>
-          <form className="submitComment">
+          <form className="submitComment" onSubmit={()=>this.props.sendComment(post._id, (post.comments.length+1), "test comment")}>
             <input type="text"></input>
-          <input type="submit" value="Submit"/>
+            <input type="submit" value="Submit"/>
           </form>
         </div>
-
       </div>
     )
   }
+
+
 }
