@@ -31,18 +31,6 @@ mongoose.Promise = global.Promise;
 let db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
-
-
-var examplepost = new Post({
-  title : "NEW POST",
-  author: "JOHN H.",
-  date: "12/13/2011",
-  content: "CONTENT OF THE NEW POST",
-  comments: []
-})
-
-//examplepost.save()
-
 // API calls
 app.get('/api/getData', (req, res) => {
 
@@ -86,7 +74,6 @@ app.post('/api/submitComment', (req, res) => {
 });
 
 app.post('/api/submitPost', (req, res) => {
-  console.log("Post request recieved")
   let body = '';
   req.on('data', chunk => {
       body += chunk.toString(); // convert Buffer to string
@@ -95,9 +82,22 @@ app.post('/api/submitPost', (req, res) => {
     console.log(body);
     let json = JSON.parse(body);
     
+    let today = new Date();
+
+    let newPost = new Post({
+      title : json.title,
+      author: json.author,
+      date: today.toLocaleDateString("en-US"),
+      content: json.content,
+      comments: []
+    })
+
+    newPost.save()
+    
     res.end('ok');
   });
-
+  
+  res.send({"response":"200"})
 });
 
 app.get('/api/auth', (req, res) => {

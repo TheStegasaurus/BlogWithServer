@@ -16,6 +16,7 @@ class App extends Component {
     this.state = {serverData: {}, postid:null}
     this.setPostID = this.setPostID.bind(this);
     this.goHome = this.goHome.bind(this); 
+    this.callApi = this.callApi.bind(this); 
   }
 
   componentDidMount() {
@@ -123,10 +124,13 @@ class SidePanel extends Component{
             <p>A blog is a discussion or informational website published on the World Wide Web consisting of discrete, often informal diary-style text entries. Posts are typically displayed in reverse chronological order, so that the most recent post appears first, at the top of the web page.</p>
           </div>
           <div className="card">
-            <h3>Popular Posts</h3>
-            <div className="popularPosts">{posts.map((item)=>{
+            <h3>Posts</h3>
+            <div>{posts.map((item)=>{
                 //eslint-disable-next-line
-                return <div><a onClick={()=>this.props.setPostID(item._id)}>{item.title}</a></div>
+                return <div className="popularPost">
+                        <hr style={linestyle}/>
+                        <a onClick={()=>this.props.setPostID(item._id)}>{item.title}</a>
+                      </div>
              })}
             </div>
           </div>
@@ -209,8 +213,8 @@ class BlogPost extends Component{
           <div className="commentHeader">Submit a Comment:</div>
           {
             <form onSubmit={this.handleSubmit}>
-              <label>
-                <input type="text" value={this.state.value} onChange={this.handleChange} />
+              <label className="commentBox">
+                <input type="text"  value={this.state.value} onChange={this.handleChange} />
               </label>
               <input type="submit" value="Submit" />
             </form>
@@ -223,20 +227,21 @@ class BlogPost extends Component{
 
 
 class NewPost extends Component{
-  constructor(props) {
+  
+  constructor (props) {
     super(props);
-    this.state = {title: '', content:''};
+    this.state = {
+      title: '',
+      content: ''
+    };
     this.handleChange = this.handleChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
   }
-
-  handleChange(event) {
-    console.log(event.target.name)
-    console.log(event.target.value)
-    this.setState({[event.target.name]: event.target.value});
-  }
-
+  
   handleSubmit(event) {
+
     console.log("submitted")
+
     fetch('/api/submitPost', {
       method: 'POST',
       headers: {
@@ -245,37 +250,48 @@ class NewPost extends Component{
       },
       body: JSON.stringify({
         title: this.state.title,
-        author: "NEW AUTHOR",
+        author: "Anon",
         content: this.state.content
       })
     })
 
+
+  
     event.preventDefault();
   }
 
+
+  handleChange (event) {
+    console.log(event.target.name)
+    console.log(event.target.value)
+    // check it out: we get the evt.target.name (which will be either "title" or "password")
+    // and use it to target the key on our `state` object with the same name, using bracket syntax
+    this.setState({ [event.target.name]: event.target.value });
+  }
+  
   render () {
-    return(
-      
+    return (
+
       <div className="leftcolumn">
         <div className="card">
-          <div className="newPostHeader">SUBMIT A POST</div>
-          <hr style={linestyle}/>
-          <form onSubmit={this.handleSubmit}>
-            <div className="newPost">
+          <div className="newPost">
+            <div className="newPostHeader">SUBMIT A POST</div>
+            <hr style={linestyle}/>
+            <form onSubmit={this.handleSubmit}>
+            <br/>
+              <label>Title:</label>
               <br/>
-              Title:
-              <br/>
-              <input type="text" name="title" value={this.state.title} onChange={this.handleChange} />
+              <input type="text" name="title" onChange={this.handleChange} />
               <br/><br/>
-              Content:
-              <br/> 
-              <textarea name="content" rows="4" cols="50" value={this.state.content} onChange={this.handleChange}></textarea>
-            </div>
-            <input type="submit" value="Submit" />
-          </form>
+              <label>Content:</label>
+              <br/>
+              <textarea type="text" name="content" rows="4" cols="50" onChange={this.handleChange} />
+              <br/><br/>
+              <input type="submit" value="Submit" />
+            </form>
+          </div>
         </div>
       </div>
-    )
+    );
   }
-
 }

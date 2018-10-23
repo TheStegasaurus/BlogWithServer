@@ -105,6 +105,9 @@ body {
   display: inline-flex;
 }
 
+.popularPost{
+  padding: 3px;
+}
 
 button{
   margin: 10px;
@@ -114,6 +117,15 @@ a{
   text-decoration: none;
   cursor: pointer;
   color: black;
+}
+
+.commentBox{
+  padding: 10px;
+}
+
+p{
+  text-align: justify;
+  text-justify: inter-word;
 }
 
 .signin{
