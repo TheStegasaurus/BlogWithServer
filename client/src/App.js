@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import './App.css';
+import React, { Component } from 'react'
+import './App.css'
 
 
 //https://medium.freecodecamp.org/how-to-make-create-react-app-work-with-a-node-backend-api-7c5c48acb1b0
@@ -13,92 +13,91 @@ let linestyle = {
 class App extends Component {
   constructor(){
     super()
-    this.state = {serverData: {}, postid:null}
-    this.setPostID = this.setPostID.bind(this);
-    this.goHome = this.goHome.bind(this); 
-    this.callApi = this.callApi.bind(this); 
+    this.state = {
+      serverData: {}, 
+      postid: null ||localStorage.getItem('postid'), 
+      user: localStorage.getItem('user') || "anon"
+    }
+    this.setPostID = this.setPostID.bind(this)
+    this.goHome = this.goHome.bind(this)
+    this.setUser = this.setUser.bind(this)
+    this.clearUser = this.clearUser.bind(this)
   }
 
   componentDidMount() {
     this.callApi()
       .then(res => {
-        console.log(res);
+        console.log(res)
         return this.setState({ 
           serverData: res.express
         })
       })
-      .catch(err => console.log(err));
+      .catch(err => console.log(err))
+  }
+
+  setUser(user){ 
+    localStorage.setItem('user', user)
+    this.setState({ user: user })
+  }
+  
+  clearUser(user){ 
+    localStorage.setItem('user', 'anon')
+    this.setState({ user: 'anon' })
   }
 
   setPostID(id) {
-    this.setState({
-        postid: id
-    });
+    localStorage.setItem('postid', id)
+    this.setState({ postid: id })
   }
 
   goHome() {
-    this.setState({
-        postid: null
-    });
+    localStorage.removeItem('postid');
+    this.setState({ postid: null })
   }
 
   callApi = async () => {
-    // Set state to loading
-    const response = await fetch('/api/getData');
-    // set state to no more loading :-)
-    const body = await response.json();
-
-    if (response.status !== 200) throw Error(body.message);
-
-    return body;
-  };
+    const response = await fetch('/api/getData')
+    const body = await response.json()
+    if (response.status !== 200) throw Error(body.message)
+    return body
+  }
 
   render() {
     let posts = this.state.serverData.posts
-    let currPost = this.state.postid;
+    let currPost = this.state.postid
     return (
       <div className="App" >
         { 
           posts && posts.length > 0 &&
           <div>
             <Header goHome={this.goHome}/>
-            <SidePanel data={posts} setPostID={this.setPostID}/>
+            <SidePanel 
+              data={posts} 
+              setPostID={this.setPostID} 
+              setUser={this.setUser} 
+              user={this.state.user} 
+              clearUser={this.clearUser}/>  
             {
               //render the summary page if no specific post is identified
-              !currPost && 
-              posts.map((post)=>{
-                return <BlogSummary data={post} setPostID={this.setPostID}/>
-              },this)
+              currPost
+              ? <BlogPost data={posts.find(e => e._id === currPost)} sendComment={this.sendComment} user={this.state.user}/>
+              : [posts.map((post)=>{
+                  return <BlogSummary data={post} setPostID={this.setPostID}/>
+                },this),<NewPost user={this.state.user}/>]
             }
-            
-            {
-              !currPost&&
-              <NewPost />
-            }
-
-            {
-              currPost &&
-              <BlogPost data={posts.find(e => e._id === currPost)} sendComment={this.sendComment}/>
-            }
-
-
+          
           </div>
         }
       </div>
-    );
+    )
   }
 }
-
-export default App;
 
 class Header extends Component{
   render () {
     return(
     <div>
       <div className="header">BLOG APP</div>
-
-      <button>Sign In</button>
-      <button>Sign Up</button>
       
       <hr style={linestyle}/>
       {/*eslint-disable-next-line*/}
@@ -115,10 +114,20 @@ class Header extends Component{
 
 class SidePanel extends Component{
   render () {
-    let posts = this.props.data;
+    let posts = this.props.data
     return(
       <div>
         <div className="rightcolumn">
+          <div className="card">
+            {this.props.user == "anon"
+            ? <SignIn setUser={this.props.setUser}/>
+            : <div>
+                <h2>Welcome {this.props.user}</h2>
+                <button onClick={()=>this.props.clearUser()}>Log out</button>
+              </div>  
+            }
+            
+          </div>
           <div className="card">
             <h2>About Blog</h2>
             <p>A blog is a discussion or informational website published on the World Wide Web consisting of discrete, often informal diary-style text entries. Posts are typically displayed in reverse chronological order, so that the most recent post appears first, at the top of the web page.</p>
@@ -134,10 +143,6 @@ class SidePanel extends Component{
              })}
             </div>
           </div>
-          <div className="card">
-            <h3>Follow Me</h3>
-            <p>Insert Social media here</p>
-          </div>
         </div>
       </div>
     )
@@ -146,7 +151,7 @@ class SidePanel extends Component{
 
 class BlogSummary extends Component{
   render () {
-    let post = this.props.data;
+    let post = this.props.data
     console.log(post)
     return(
       <div className="leftcolumn">
@@ -164,19 +169,19 @@ class BlogSummary extends Component{
 class BlogPost extends Component{
 
   constructor(props) {
-    super(props);
-    this.state = {value: ''};
+    super(props)
+    this.state = {value: ''}
 
-    this.handleChange = this.handleChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleChange = this.handleChange.bind(this)
+    this.handleSubmit = this.handleSubmit.bind(this)
   }
 
   handleChange(event) {
-    this.setState({value: event.target.value});
+    this.setState({value: event.target.value})
   }
 
   handleSubmit(event) {
-    let post = this.props.data;
+    let post = this.props.data
 
     fetch('/api/submitComment', {
       method: 'POST',
@@ -187,16 +192,20 @@ class BlogPost extends Component{
       body: JSON.stringify({
         pid: post._id,
         c_id: post.comments.length+1,
-        user: "John doe",
+        user: this.props.user,
         content: this.state.value,
       })
     })
+    
+    setTimeout(function () {
+      window.location.reload()
+    }, 50)
 
-    event.preventDefault();
+    event.preventDefault()
   }
 
   render () {
-    let post = this.props.data;
+    let post = this.props.data
     console.log()
     return(
       <div className="leftcolumn">
@@ -229,13 +238,13 @@ class BlogPost extends Component{
 class NewPost extends Component{
   
   constructor (props) {
-    super(props);
+    super(props)
     this.state = {
       title: '',
       content: ''
-    };
-    this.handleChange = this.handleChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
+    }
+    this.handleChange = this.handleChange.bind(this)
+    this.handleSubmit = this.handleSubmit.bind(this)
   }
   
   handleSubmit(event) {
@@ -250,23 +259,23 @@ class NewPost extends Component{
       },
       body: JSON.stringify({
         title: this.state.title,
-        author: "Anon",
+        author: this.props.user,
         content: this.state.content
       })
     })
 
-
+    setTimeout(function () {
+      window.location.reload()
+    }, 50)
   
-    event.preventDefault();
+    event.preventDefault()
   }
 
 
   handleChange (event) {
     console.log(event.target.name)
     console.log(event.target.value)
-    // check it out: we get the evt.target.name (which will be either "title" or "password")
-    // and use it to target the key on our `state` object with the same name, using bracket syntax
-    this.setState({ [event.target.name]: event.target.value });
+    this.setState({ [event.target.name]: event.target.value })
   }
   
   render () {
@@ -292,6 +301,54 @@ class NewPost extends Component{
           </div>
         </div>
       </div>
-    );
+    )
   }
 }
+
+class SignIn extends Component{
+
+  constructor (props) {
+    super(props)
+    this.state = {
+      username: ''
+    }
+    this.handleChange = this.handleChange.bind(this)
+    this.handleSubmit = this.handleSubmit.bind(this)
+  }
+  
+  handleSubmit(event) {
+
+    console.log("submitted")
+    this.props.setUser(this.state.title)
+
+    event.preventDefault()
+  }
+
+
+  handleChange (event) {
+    console.log(event.target.name)
+    console.log(event.target.value)
+    this.setState({ [event.target.name]: event.target.value })
+  }
+
+
+  render () {
+    return (
+      <div className="newPost">
+        <div className="newPostHeader">SIGN IN</div>
+        <hr style={linestyle}/>
+        <form onSubmit={this.handleSubmit}>
+        <br/>
+          <label>Username:</label>
+          <br/>
+          <input type="text" name="title" onChange={this.handleChange} />
+          <br/><br/>
+          <input type="submit" value="Sign In" />
+        </form>
+      </div>
+
+    )
+  }
+}
+
+export default App

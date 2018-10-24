@@ -69,7 +69,7 @@ app.post('/api/submitComment', (req, res) => {
     res.end('ok');
   });
 
-  res.send({"response":"200"})
+  return res.json()
 
 });
 
@@ -96,8 +96,8 @@ app.post('/api/submitPost', (req, res) => {
     
     res.end('ok');
   });
-  
-  res.send({"response":"200"})
+
+  return res.json()
 });
 
 app.get('/api/auth', (req, res) => {
