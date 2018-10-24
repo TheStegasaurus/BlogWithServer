@@ -37,7 +37,7 @@ class BlogPost extends Component{
     
     setTimeout(() => {
       window.location.reload()
-    }, 50)
+    }, 500)
 
     event.preventDefault()
   }

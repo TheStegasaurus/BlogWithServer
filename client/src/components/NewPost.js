@@ -1,7 +1,5 @@
 import React, { Component } from 'react'
 
-
-
 /* Structure of the Component that allows us to input text and 
  * send new post data to the server */
 class NewPost extends Component{
@@ -33,12 +31,12 @@ class NewPost extends Component{
 
     setTimeout(() => {
       window.location.reload()
-    }, 50)
+    }, 500)
   
     event.preventDefault()
   }
 
-  /*Accesses state variables every time the values in the text boxes change*/
+  /* Sets state variables every time the values in the text boxes change */
   handleChange (event) {
     this.setState({ [event.target.name]: event.target.value })
   }
