@@ -33,11 +33,10 @@ class BlogPost extends Component{
         user: this.props.user,
         content: this.state.value,
       })
-    })
-    
-    setTimeout(() => {
+    }).then(
       window.location.reload()
-    }, 500)
+    )
+    
 
     event.preventDefault()
   }

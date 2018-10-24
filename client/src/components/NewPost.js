@@ -27,11 +27,9 @@ class NewPost extends Component{
         author: this.props.user,
         content: this.state.content
       })
-    })
-
-    setTimeout(() => {
+    }).then(
       window.location.reload()
-    }, 500)
+    )
   
     event.preventDefault()
   }
